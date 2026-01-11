@@ -21,6 +21,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'phone',
+        'status',
     ];
 
     /**
@@ -43,6 +46,38 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => 'string',
+            'status' => 'string',
         ];
+    }
+
+    // check if user is owner
+    public function isOwner(): bool
+    {
+        return $this->role === 'OWNER';
+    }
+
+    // check if user is staff
+    public function isStaff(): bool
+    {
+        return $this->role === 'STAFF';
+    }
+
+    // check if user is active
+    public function isActive(): bool
+    {
+        return $this->status === 'ACTIVE';
+    }
+
+    // scoope query to only include owners
+    public function scopeOwners($query)
+    {
+        return $query->where('role', 'OWNER');
+    }
+
+    // scoope query to only include staffs
+    public function scopeStaffs($query)
+    {
+        return $query->where('role', 'STAFF');
     }
 }
