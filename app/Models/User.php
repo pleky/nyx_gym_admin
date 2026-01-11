@@ -80,4 +80,9 @@ class User extends Authenticatable
     {
         return $query->where('role', 'STAFF');
     }
+
+    public function checkIns()
+    {
+        return $this->hasMany(CheckIn::class);
+    }
 }

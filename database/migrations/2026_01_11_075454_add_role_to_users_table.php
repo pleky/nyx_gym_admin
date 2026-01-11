@@ -25,6 +25,8 @@ return new class extends Migration
             $table->enum('status', ['ACTIVE', 'INACTIVE'])
             ->default('ACTIVE')
             ->after('password');
+
+            $table->softDeletes()->after('status');
         });
     }
 
