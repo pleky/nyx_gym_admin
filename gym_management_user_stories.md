@@ -19,7 +19,7 @@ Fitur inti MVP:
 
 | Sprint   | Start Date | End Date   | Stories                               | Total Story Points | Team Capacity | Status       |
 |----------|------------|-----------|----------------------------------------|--------------------|--------------|-------------|
-| Sprint 1 | 2026-01-13 | 2026-01-27| US-001, US-002, US-003                 | 18                 | 20           | Not Started |
+| Sprint 1 | 2026-01-13 | 2026-01-27| US-001, US-002, US-003                 | 18                 | 20           | **In Progress** |
 | Sprint 2 | 2026-01-30 | 2026-02-13| US-004, US-005, US-006, US-013         | 14                 | 20           | Not Started |
 | Sprint 3 | 2026-02-16 | 2026-03-02| US-007, US-008, US-009, US-014         | 21                 | 20           | Not Started |
 | Sprint 4 | 2026-03-05 | 2026-03-19| US-010, US-011, US-012, US-015         | 19                 | 20           | Not Started |
@@ -39,18 +39,28 @@ Total: **15 user stories**, **72 story points**, target **8 minggu** (4 sprint �
   As an Owner, I want to login to the admin panel so that I can access the gym management features.  
 - **Priority**: High  
 - **Story Points**: 5  
-- **Status**: Todo  
+- **Status**: ✅ **Done**
 
 **Acceptance Criteria:**
-1. Owner can input email and password.
-2. System validates email and password.
-3. Owner is redirected to dashboard on successful login.
-4. Error message shows on failed login.
+1. ✅ Owner can input email and password.
+2. ✅ System validates email and password.
+3. ✅ Owner is redirected to dashboard on successful login.
+4. ✅ Error message shows on failed login.
 
 **Tasks:**
-- T-001: Setup Laravel Breeze authentication.
-- T-002: Create login blade template.
-- T-003: Setup role-based access control (OWNER/STAFF).
+- ✅ T-001: Setup Laravel Breeze authentication.
+- ✅ T-002: Create login blade template.
+- ✅ T-003: Setup role-based access control (OWNER/STAFF).
+
+**Implementation Notes:**
+- Installed Laravel Breeze with Blade stack
+- Added `role` (enum: OWNER/STAFF), `phone`, and `status` (enum: ACTIVE/INACTIVE) columns to users table
+- Created `EnsureUserHasRole` middleware for role-based access control
+- Created `CheckUserStatus` middleware for active/inactive user management
+- Added helper methods to User model: `isOwner()`, `isStaff()`, `isActive()`
+- Created OwnerSeeder for initial owner account (email: owner@gym.local, password: password)
+- Written 7 test cases for authentication and role-based access
+- Middleware registered in bootstrap/app.php: `'role'` and `'active'`
 
 ---
 
@@ -61,18 +71,23 @@ Total: **15 user stories**, **72 story points**, target **8 minggu** (4 sprint �
   As an Owner, I want to see a dashboard with key metrics (active members, today's check-ins, monthly revenue) so that I can quickly assess gym performance.  
 - **Priority**: High  
 - **Story Points**: 8  
-- **Status**: Todo  
+- **Status**: 🔄 **In Progress**
 
 **Acceptance Criteria:**
-1. Dashboard displays total count of active members.
-2. Dashboard displays count of today's check-ins.
-3. Dashboard displays total revenue for current month.
-4. All metrics update on page load or refresh.
+1. ⏳ Dashboard displays total count of active members.
+2. ⏳ Dashboard displays count of today's check-ins.
+3. ⏳ Dashboard displays total revenue for current month.
+4. ⏳ All metrics update on page load or refresh.
 
 **Tasks:**
-- T-004: Create dashboard controller.
-- T-005: Design dashboard layout with cards (Blade + Tailwind).
-- T-006: Write Eloquent queries for metrics.
+- ✅ T-004: Create dashboard controller.
+- ⏳ T-005: Design dashboard layout with cards (Blade + Tailwind).
+- ⏳ T-006: Write Eloquent queries for metrics.
+
+**Implementation Notes:**
+- Created DashboardController with basic index method
+- Route `/dashboard` protected with `auth` and `active` middleware
+- Using default Breeze dashboard view (needs customization)
 
 ---
 
@@ -83,17 +98,21 @@ Total: **15 user stories**, **72 story points**, target **8 minggu** (4 sprint �
   As an Owner, I want to create staff accounts so that front desk staff can use the system.  
 - **Priority**: High  
 - **Story Points**: 5  
-- **Status**: Todo  
+- **Status**: ⏳ **Todo**
 
 **Acceptance Criteria:**
-1. Owner can input staff name, email, and password.
-2. System generates unique account for staff.
-3. Staff receives login credentials (untuk MVP bisa manual share).
-4. Staff is assigned `STAFF` role automatically.
+1. ⏳ Owner can input staff name, email, and password.
+2. ⏳ System generates unique account for staff.
+3. ⏳ Staff receives login credentials (untuk MVP bisa manual share).
+4. ⏳ Staff is assigned `STAFF` role automatically.
 
 **Tasks:**
-- T-007: Create staff creation form.
-- T-008: Implement staff controller (create/store).
+- ⏳ T-007: Create staff creation form.
+- ⏳ T-008: Implement staff controller (create/store).
+
+**Implementation Notes:**
+- Route `/staff` already protected with `auth`, `active`, and `role:OWNER` middleware
+- StaffController exists but methods not implemented yet
 
 ---
 
@@ -184,69 +203,39 @@ Total: **15 user stories**, **72 story points**, target **8 minggu** (4 sprint �
 
 ---
 
-### Sprint 3 – Membership Management
+## 4. Progress Tracking
 
-#### US-007 – Create Membership Plan
+**Sprint 1 Progress (as of 2026-01-11):**
+- ✅ US-001: Owner Login - **COMPLETED** (5 points)
+- 🔄 US-002: View Dashboard - **IN PROGRESS** (2/8 points estimated)
+- ⏳ US-003: Create Staff Account - **TODO** (0/5 points)
 
-- **Role**: Owner  
-- **Story**:  
-  As an Owner, I want to create membership plans (name, duration, price) so that I can define pricing tiers.  
-- **Priority**: High  
-- **Story Points**: 5  
-- **Status**: Todo  
+**Total Completed:** 5/18 points (27.8%)
 
-**Acceptance Criteria:**
-1. Owner can input plan name, duration (days), and price.
-2. Owner can set plan as active/inactive.
-3. All plans are displayed in a list with edit/delete options.
-4. Inactive plans cannot be assigned to new members.
+**Git Tags:**
+- `v0.1.0-sprint1-auth` - Authentication foundation completed
 
-**Tasks:**
-- T-016: Create membership plan form.
-- T-017: Implement membership plan CRUD.
+**Next Steps:**
+1. Complete US-002: Finish dashboard with real metrics
+2. Implement US-003: Staff management CRUD
+3. Write tests for US-002 and US-003
+4. Merge and tag Sprint 1 completion
 
 ---
 
-#### US-008 – Assign Membership
+## 5. Technical Decisions Log
 
-- **Role**: Staff  
-- **Story**:  
-  As a Staff, I want to assign a membership plan to a member so that their gym access is activated.  
-- **Priority**: High  
-- **Story Points**: 5  
-- **Status**: Todo  
+**Date: 2026-01-11**
+- **Decision:** Separate `CheckUserStatus` and `EnsureUserHasRole` middleware
+- **Reason:** Single Responsibility Principle - active status check is different concern from role check
+- **Impact:** All authenticated routes now use `active` middleware, role-specific routes add `role:OWNER` or `role:STAFF`
 
-**Acceptance Criteria:**
-1. Staff selects member and membership plan from dropdowns.
-2. System auto-calculates `end_date = start_date + duration_days`.
-3. Membership status is set to `ACTIVE`.
-4. Member can now check-in to gym.
+**Date: 2026-01-11**
+- **Decision:** Use enum for `role` and `status` columns in users table
+- **Reason:** Database-level validation, prevents invalid values
+- **Values:** `role` = OWNER/STAFF, `status` = ACTIVE/INACTIVE
 
-**Tasks:**
-- T-018: Create membership assignment form.
-- T-019: Implement membership logic (start_date, end_date, status).
-
----
-
-#### US-009 – Auto Update Membership Status
-
-- **Role**: System  
-- **Story**:  
-  As a System, I want membership status to automatically change to EXPIRED when end_date passes so that access is properly controlled.  
-- **Priority**: High  
-- **Story Points**: 8  
-- **Status**: Todo  
-
-**Acceptance Criteria:**
-1. Daily job runs to check expired memberships.
-2. Memberships with `end_date < today` are marked `EXPIRED`.
-3. Check-in is blocked for `EXPIRED` memberships.
-4. Owner can see membership expiry notifications (future).
-
-**Tasks:**
-- T-020: Create database migration for `memberships`.
-- T-021: Setup Laravel Scheduler job for daily membership status update.
-
----
-
-#### US-014 – View Member
+**Date: 2026-01-11**
+- **Decision:** Middleware naming convention uses adjectives/verbs, not nouns
+- **Reason:** Follow Laravel convention (`auth`, `verified`, etc.) for better readability
+- **Examples:** `active` (not `status`), `role:OWNER` (not `permission:owner`)
