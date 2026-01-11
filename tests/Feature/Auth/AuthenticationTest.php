@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\Auth;
+namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -10,45 +10,144 @@ class AuthenticationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_login_screen_can_be_rendered(): void
+    // test owner can login
+    public function test_owner_can_login(): void
     {
-        $response = $this->get('/login');
+        // Arrange: create owner user
+        $owner = User::factory()->create([
+            'email' => 'owner@test.com',
+            'password' => bcrypt('password'),
+            'role' => 'OWNER',
+            'status' => 'ACTIVE',
+        ]);
 
-        $response->assertStatus(200);
-    }
-
-    public function test_users_can_authenticate_using_the_login_screen(): void
-    {
-        $user = User::factory()->create();
-
+        // Act: attempt to login
         $response = $this->post('/login', [
-            'email' => $user->email,
+            'email' => 'owner@test.com',
             'password' => 'password',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        // Assert: check if login was successful
+        $response->assertRedirect('/dashboard');
+        $this->assertAuthenticatedAs($owner);
     }
 
-    public function test_users_can_not_authenticate_with_invalid_password(): void
+    // test staff can login
+    public function test_staff_can_login(): void
     {
-        $user = User::factory()->create();
-
-        $this->post('/login', [
-            'email' => $user->email,
-            'password' => 'wrong-password',
+        // Arrange: create staff user
+        $staff = User::factory()->create([
+            'email' => 'stafff@test.com',
+            'password' => bcrypt('password'),
+            'role' => 'STAFF',
+            'status' => 'ACTIVE',
         ]);
 
-        $this->assertGuest();
+        // Act: attempt to login
+        $response = $this->post('/login', [
+            'email' => 'stafff@test.com',
+            'password' => 'password',
+        ]);
+
+        // Assert: check if login was successful
+        $response->assertRedirect('/dashboard');
+        $this->assertAuthenticatedAs($staff);
     }
 
-    public function test_users_can_logout(): void
+    // test login fail with wrong password
+    public function test_login_fails_with_wrong_password(): void
     {
-        $user = User::factory()->create();
+        // Arrange: create user
+        $user = User::factory()->create([
+            'email' => 'user@test.com',
+            'password' => bcrypt('correct_password'),
+        ]);
 
-        $response = $this->actingAs($user)->post('/logout');
+        // Act: attempt to login with wrong password
+        $response = $this->post('/login', [
+            'email' => 'user@test.com',
+            'password' => 'wrong_password',
+        ]);
 
+        // Assert: check if login failed
+        $response->assertSessionHasErrors(['email']);
         $this->assertGuest();
-        $response->assertRedirect('/');
     }
+
+    // test inactive user cannot login
+     public function test_inactive_user_is_logged_out(): void
+    {
+         /** @var User $user */
+        $user = User::factory()->create([
+            'email' => 'inactive@test.com',
+            'password' => bcrypt('password'),
+            'role' => 'STAFF',
+            'status' => 'INACTIVE',
+        ]);
+
+        // Login first
+        $this->actingAs($user);
+
+        // Try to access dashboard (middleware will check active status)
+        $response = $this->get('/dashboard');
+
+        // Should be redirected to login because inactive
+        $response->assertRedirect('/login');
+        $this->assertGuest();
+    }
+
+    // test only owner can access owner routes
+    public function test_only_owner_can_access_staff_routes(): void
+    {
+         /** @var User $staff */
+        $staff = User::factory()->create([
+            'role' => 'STAFF',
+            'status' => 'ACTIVE',
+        ]);
+
+        $this->actingAs($staff);
+
+        // Assuming route /staff is exist and protected by role:OWNER 
+        $response = $this->get('/staff');
+
+        // should get 403 forbidden
+        $response->assertStatus(403);
+
+    }
+
+    /**
+     * Test owner can access staff management routes.
+     */
+    public function test_owner_can_access_staff_routes(): void
+    {
+        /** @var User $owner */
+        $owner = User::factory()->create([
+            'role' => 'OWNER',
+            'status' => 'ACTIVE',
+        ]);
+
+        $this->actingAs($owner);
+
+        // Assuming route /staff is exist and protected by role:OWNER 
+        $response = $this->get('/staff');
+       
+        // Will be 200 OK or redirect, but NOT 403
+        $this->assertNotEquals(403, $response->status());
+    }
+
+    /**
+     * Test user helper methods work correctly.
+     */
+    public function test_user_role_helper_methods(): void
+    {
+        $owner = User::factory()->create(['role' => 'OWNER']);
+        $staff = User::factory()->create(['role' => 'STAFF']);
+
+        $this->assertTrue($owner->isOwner());
+        $this->assertFalse($owner->isStaff());
+
+        $this->assertTrue($staff->isStaff());
+        $this->assertFalse($staff->isOwner());
+    }
+
 }

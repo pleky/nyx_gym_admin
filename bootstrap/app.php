@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // register custom middleware
         $middleware->alias([
             'role' => App\Http\Middleware\EnsureUserHasRole::class,
+            'active' => App\Http\Middleware\CheckUserStatus::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

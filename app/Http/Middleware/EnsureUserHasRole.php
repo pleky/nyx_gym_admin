@@ -27,12 +27,6 @@ class EnsureUserHasRole
             abort(403, 'Unauthorized action. You do not have the required role to access this resource.');
         }
 
-        // check if user is active
-        if (!$request->user()->isActive()) { 
-            auth()->logout();
-            return redirect()->route('login')
-                ->with('error', 'Your account is not active. Please contact the administrator.');
-        }
 
         return $next($request);
     }
