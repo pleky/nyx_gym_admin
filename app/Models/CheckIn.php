@@ -12,19 +12,12 @@ class CheckIn extends Model
 
     protected $fillable = [
         'member_id',
-        'checkin_at',
-        'created_by',
-        'notes',
-        
+        'checked_in_at',
     ];
 
     protected $casts = [
-        'checkin_at' => 'datetime',
+        'checked_in_at' => 'datetime',
     ];
 
     public function member() { return $this->belongsTo(Member::class); }
-
-    public function createdBy() {
-        return $this->belongsTo(User::class, 'created_by');
-    }
 }

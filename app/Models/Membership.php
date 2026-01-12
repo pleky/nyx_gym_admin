@@ -16,13 +16,11 @@ class Membership extends Model
         'start_date',
         'end_date',
         'status',
-        'price_paid',
     ];
 
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
-        'price_paid' => 'decimal:2',
     ];
 
     public function member() {

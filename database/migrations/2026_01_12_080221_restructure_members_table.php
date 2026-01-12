@@ -17,10 +17,12 @@ return new class extends Migration
             
             // 2. Add email column (nullable, unique)
             $table->string('email')->nullable()->unique()->after('phone');
-            
+
+            $table->foreignId('created_by')->constrained('users')->restrictOnDelete()->after('id');
+
             // 3. Add indexes for query performance
-            $table->index('status'); // WHERE status = 'ACTIVE' queries
-            $table->index('deleted_at'); // Soft delete queries optimization
+            $table->index(['status', 'deleted_at', 'created_by']); // WHERE status = 'ACTIVE' queries
+
         });
     }
 
@@ -30,16 +32,21 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('members', function (Blueprint $table) {
-            // Drop indexes first (dependencies)
-            $table->dropIndex(['deleted_at']);
-            $table->dropIndex(['status']);
+            // 1. Drop composite index first
+            $table->dropIndex(['status', 'deleted_at', 'created_by']);
             
-            // Drop email column
-            $table->dropUnique(['email']); // Drop unique constraint
-            $table->dropColumn('email');
+            // 2. Drop foreign key constraint
+            $table->dropForeign(['created_by']);
             
-            // Rename column back
+            // 3. Drop columns
+            $table->dropColumn(['created_by', 'email']);
+            
+            // 4. Rename column back
             $table->renameColumn('full_name', 'name');
+            
+            // 5. Recreate old indexes
+            $table->index('status');
+            $table->index('deleted_at');
         });
     }
 };

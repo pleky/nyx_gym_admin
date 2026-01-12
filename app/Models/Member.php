@@ -12,11 +12,13 @@ class Member extends Model
 
     protected $fillable = [
         'member_id',
-        'name',
+        'full_name',
         'phone',
         'gender',
         'date_of_birth',
         'status',
+        'gym_id',
+        'created_by',
     ];
 
     protected $casts = [
@@ -31,6 +33,11 @@ class Member extends Model
     public function checkIns()
     {
         return $this->hasMany(CheckIn::class);
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     protected static function booted()

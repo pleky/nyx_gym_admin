@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Gym;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -13,6 +14,7 @@ class OwnerSeeder extends Seeder
      */
     public function run(): void
     {
+
         User::create([
             'name' => 'Nyx Gym Owner',
             'email' => 'owner@nyxgym.com',
@@ -20,6 +22,7 @@ class OwnerSeeder extends Seeder
             'role' => 'OWNER',
             'phone' => '+6281111111111',
             'status' => 'ACTIVE',
+            'gym_id' => Gym::firstOrFail()->id,
             'email_verified_at' => now(),
         ]);
 
