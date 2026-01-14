@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('membership_plan_id')->constrained()->restrictOnDelete();
             $table->date('start_date');
             $table->date('end_date');
-            $table->string('status', 10)->default('ACTIVE');
+            $table->string('status')->default('ACTIVE');
             $table->decimal('price_paid', 10, 2);
             $table->timestamps();
             $table->softDeletes();

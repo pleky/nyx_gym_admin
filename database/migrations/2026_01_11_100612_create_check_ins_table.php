@@ -17,6 +17,7 @@ return new class extends Migration
             $table->timestamp('checkin_at')->useCurrent();
             $table->text('notes')->nullable();
             $table->foreignId('created_by')->constrained('users')->restrictOnDelete();
+            $table->string('checked_in_by')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

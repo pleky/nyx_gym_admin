@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Gym;
 use App\Models\MembershipPlan;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,11 +19,42 @@ class MembershipPlanFactory extends Factory
      */
     public function definition(): array
     {
-        return [
-            'name' => $this->faker->randomElement(['Monthly', 'Quarterly', 'Yearly']),
-            'duration_days' => $this->faker->randomElement([30, 90, 365]),
-            'price' => $this->faker->randomFloat(2, 20, 500),
-            'is_active' => true,
+        $gym = Gym::inRandomOrder()->first();
+        $plans = [
+            ['name' => 'Monthly', 'duration' => 30, 'price' => 250000],
+            ['name' => '3 Months', 'duration' => 90, 'price' => 650000],
+            ['name' => '6 Months', 'duration' => 180, 'price' => 1200000],
+            ['name' => 'Annual', 'duration' => 365, 'price' => 2200000],
         ];
+        $plan = $this->faker->randomElement($plans);
+    
+        return [
+            'name' => $plan['name'],
+            'duration_days' => $plan['duration'],
+            'price' => $plan['price'],
+            'is_active' => $this->faker->boolean(90),
+            'gym_id' => $gym->id,
+            'description' => $this->faker->optional(0.5)->sentence(),
+        ];
+    }
+
+    public function monthly() {
+    return $this->state([
+        'name' => 'Monthly',
+        'duration_days' => 30,
+        'price' => 250000,
+        ]);
+    }
+
+    public function annual() {
+        return $this->state([
+            'name' => 'Annual',
+            'duration_days' => 365,
+            'price' => 2200000,
+        ]);
+    }
+
+    public function inactive() {
+        return $this->state(['is_active' => false]);
     }
 }

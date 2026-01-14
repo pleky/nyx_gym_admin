@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('duration_days')->comment('Duration of the plan in days');
             $table->decimal('price', 10, 2);
             $table->boolean('is_active')->default(true);
+            $table->text('description')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

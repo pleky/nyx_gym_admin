@@ -4,17 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Member extends Model
 {
     /** @use HasFactory<\Database\Factories\MemberFactory> */
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'member_id',
         'full_name',
         'phone',
         'gender',
+        'email',
         'date_of_birth',
         'status',
         'gym_id',
@@ -23,6 +26,8 @@ class Member extends Model
 
     protected $casts = [
         'date_of_birth' => 'date',
+        'status' => 'string',
+        'gender' => 'string',
     ];
 
     public function memberships()
@@ -38,6 +43,16 @@ class Member extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function gym()
+    {
+        return $this->belongsTo(Gym::class);
+    }
+
+    public function payments() 
+    {
+        return $this->hasMany(Payment::class);
     }
 
     protected static function booted()

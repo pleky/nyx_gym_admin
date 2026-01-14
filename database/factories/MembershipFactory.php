@@ -21,8 +21,8 @@ class MembershipFactory extends Factory
     public function definition(): array
     {
 
-        $plan = MembershipPlan::factory()->create();
-        $member = Member::factory()->create();
+        $plan = MembershipPlan::inRandomOrder()->first();
+        $member = Member::inRandomOrder()->first();
 
         $start = $this->faker->dateTimeBetween('-1 month', 'now')->format('Y-m-d');
         $end = date('Y-m-d', strtotime($start . ' + ' . $plan->duration_days . ' days'));
@@ -33,8 +33,21 @@ class MembershipFactory extends Factory
             'member_id' => $member->id,
             'start_date' => $start,
             'end_date' => $end,
-            'status' => $this->faker->randomElement(['ACTIVE', 'EXPIRED', 'CANCELLED']),
-            'price_paid' => $plan->price,
+            'status' => $this->faker->randomElement(['ACTIVE', 'EXPIRED', 'CANCELLED', 'PENDING_RENEWAL']),
+            'auto_renew' => $this->faker->boolean(30),
+            'gym_id' => $member->gym_id,
         ];
+    }
+
+    public function active() {
+        return $this->state(['status' => 'ACTIVE']);
+    }
+
+    public function expired() {
+        return $this->state(['status' => 'EXPIRED']);
+    }
+
+    public function withAutoRenew() {
+        return $this->state(['auto_renew' => true]);
     }
 }

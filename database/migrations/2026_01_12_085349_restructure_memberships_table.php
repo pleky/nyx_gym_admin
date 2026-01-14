@@ -16,6 +16,7 @@ return new class extends Migration
            $table->dropColumn('price_paid');
            $table->boolean('auto_renew')->default(false)->after('end_date');
            $table->index(['status', 'deleted_at']);
+           $table->foreignId('gym_id')->constrained()->restrictOnDelete()->after('member_id');
         });
 
         DB::statement('ALTER TABLE memberships DROP CONSTRAINT IF EXISTS status_check');
@@ -29,9 +30,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('memberships', function (Blueprint $table) {
-           $table->decimal('price_paid', 10, 2)->after('end_date');
-           $table->dropColumn('auto_renew');
-           $table->dropIndex(['status', 'deleted_at']);
+            $table->decimal('price_paid', 10, 2)->after('end_date');
+            $table->dropColumn('auto_renew');
+            $table->dropIndex(['status', 'deleted_at']);
+            $table->dropForeign(['gym_id']);
         });
 
         DB::statement('ALTER TABLE memberships DROP CONSTRAINT IF EXISTS status_check');

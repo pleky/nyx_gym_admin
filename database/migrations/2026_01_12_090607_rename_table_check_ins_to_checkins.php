@@ -16,7 +16,6 @@ return new class extends Migration
 
         Schema::table('checkins', function (Blueprint $table) {
             $table->renameColumn('checkin_at', 'checked_in_at');
-            $table->dropForeign(['created_by']);
             $table->dropColumn('created_by');
             $table->dropColumn('notes');
         });

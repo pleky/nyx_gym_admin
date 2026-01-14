@@ -20,14 +20,46 @@ class CheckInFactory extends Factory
      */
     public function definition(): array
     {
-        $member = Member::factory()->create();
-        $user = User::factory()->create();
+        $member = Member::inRandomOrder()->first();
+        $checkedInBy = $this->faker->randomElement([
+            // 70% Staff-Assisted (mayoritas gym Indonesia masih manual)
+            'Staff: ' . $this->faker->name(),
+            'Staff: ' . $this->faker->name(),
+            'Staff: ' . $this->faker->name(),
+            'Staff: ' . $this->faker->name(),
+            'Staff: ' . $this->faker->name(),
+            'Staff: ' . $this->faker->name(),
+            'Staff: ' . $this->faker->name(),
+            
+            // 20% Self-Service Kiosk
+            'Kiosk #1',
+            'Kiosk #2',
+            
+            // 10% Mobile App
+            'Mobile App',
+        ]);
 
         return [
             'member_id' => $member->id,
-            'created_by' => $user->id,
-            'check_in_at' => $this->faker->dateTimeBetween('-1 week', 'now'),
-            'notes' => $this->faker->optional()->sentence(),
+            'checked_in_at' => $this->faker->dateTimeBetween('-1 week', 'now'),
+            'checked_in_by' => $checkedInBy,
+            'gym_id' => $member->gym_id,
         ];
+    }
+
+    public function today() {
+        return $this->state(['checked_in_at' => now()->setHour(rand(6, 22))]);
+    }
+
+    public function recent() {
+        return $this->state(['checked_in_at' => now()->subHours(rand(1, 6))]);
+    }
+
+    public function staffAssisted() {
+        return $this->state(['checked_in_by' => 'Staff: ' . $this->faker->name()]);
+    }
+
+    public function kiosk() {
+        return $this->state(['checked_in_by' => 'Kiosk #' . rand(1, 3)]);
     }
 }
